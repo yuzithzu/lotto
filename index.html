@@ -17,6 +17,7 @@
         }
 
         form {
+            width: 90%;
             max-width: 400px;
             margin: 0 auto;
             background-color: #fff;
@@ -32,7 +33,7 @@
         }
 
         input, select {
-            width: calc(100% - 22px);
+            width: 100%;
             padding: 10px;
             margin-bottom: 20px;
             box-sizing: border-box;
@@ -51,9 +52,11 @@
             font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
         }
 
         .records-container {
+            width: 100%;
             max-height: 300px;
             overflow-y: auto;
             margin-top: 20px;
@@ -84,6 +87,54 @@
             font-size: 14px;
             border-radius: 3px;
             cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #winnerNumbers1,
+        #winnerNumbers2 {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #winningDate {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #drawTime {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        #checkWinners {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .winning-row {
+            background-color: #aaffaa;
         }
     </style>
 </head>
@@ -122,6 +173,25 @@
 
         <input type="button" value="Submit" onclick="submitForm()">
     </form>
+
+    <label for="winnerNumbers1">Enter Winning Number 1:</label>
+    <input type="number" id="winnerNumbers1" name="winnerNumbers1" placeholder="Enter winning number 1">
+
+    <label for="winnerNumbers2">Enter Winning Number 2:</label>
+    <input type="number" id="winnerNumbers2" name="winnerNumbers2" placeholder="Enter winning number 2">
+
+    <label for="winningDate">Enter Winning Date:</label>
+    <input type="date" id="winningDate" name="winningDate" placeholder="Enter winning date">
+
+    <label for="drawTime">Select Draw Time:</label>
+    <select id="winningDrawTime" name="winningDrawTime" required>
+        <option value="2pm">2:00 PM</option>
+        <option value="5pm">5:00 PM</option>
+        <option value="9pm">9:00 PM</option>
+    </select>
+
+    <label for="checkWinners">Check Winners</label>
+    <input type="button" id="checkWinners" value="Check Winners" onclick="checkWinners()">
 
     <div class="records-container" id="submittedData"></div>
 
@@ -162,17 +232,56 @@
                 }
                 table += "<th>Action</th></tr>";
 
-                // Display rows with limit to 5 columns
+                // Display rows
                 records.forEach(function(record, index) {
                     table += "<tr>";
-                    var count = 0;
-                    for (var key in record) {
-                        if (count < 5) {
-                            table += "<td>" + record[key] + "</td>";
-                            count++;
-                        }
+                    for (var key in records[0]) {
+                        table += "<td>" + record[key] + "</td>";
                     }
                     table += "<td><button onclick='deleteRecord(" + index + ")'>Delete</button></td></tr>";
+                });
+            }
+            table += "</table>";
+            container.innerHTML = table;
+        }
+
+        function checkWinners() {
+            var records = JSON.parse(localStorage.getItem('lotteryRecords')) || [];
+            var container = document.getElementById("submittedData");
+            var winnerNumber1 = document.getElementById("winnerNumbers1").value;
+            var winnerNumber2 = document.getElementById("winnerNumbers2").value;
+            var winningDate = document.getElementById("winningDate").value;
+            var winningDrawTime = document.getElementById("winningDrawTime").value.toLowerCase();
+
+            var table = "<table>";
+
+            if (records.length > 0) {
+                // Display header row
+                table += "<tr>";
+                for (var key in records[0]) {
+                    table += "<th>" + key + "</th>";
+                }
+                table += "</tr>";
+
+                // Display rows and highlight winning entries
+                records.forEach(function(record) {
+                    var drawDate = record['drawDate'];
+                    var drawTime = record['drawTime'].toLowerCase();
+                    var isMatch = false;
+
+                    if (drawDate === winningDate && drawTime === winningDrawTime) {
+                        if (winnerNumber1 && winnerNumber1 == record['number1'] && winnerNumber2 && winnerNumber2 == record['number2']) {
+                            isMatch = true;
+                        }
+                    }
+
+                    if (isMatch) {
+                        table += "<tr class='winning-row'>";
+                        for (var key in records[0]) {
+                            table += "<td>" + record[key] + "</td>";
+                        }
+                        table += "</tr>";
+                    }
                 });
             }
             table += "</table>";
@@ -185,3 +294,4 @@
 
 </body>
 </html>
+
