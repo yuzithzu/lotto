@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery Record</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        input, select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="button"] {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        td button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lottery Record</h1>
+
+    <form id="lotteryForm">
+        <label for="number1">Enter Number 1:</label>
+        <input type="number" id="number1" name="number1" required>
+        
+        <label for="number2">Enter Number 2:</label>
+        <input type="number" id="number2" name="number2" required>
+        
+        <label for="betType">Bet Type:</label>
+        <select id="betType" name="betType" required>
+            <option value="straight">Straight</option>
+            <option value="Rambol">Rambol</option>
+        </select>
+
+        <label for="drawDate">Select Draw Date:</label>
+        <input type="date" id="drawDate" name="drawDate" required>
+
+        <label for="drawTime">Select Draw Time:</label>
+        <select id="drawTime" name="drawTime" required>
+            <option value="2pm">2:00 PM</option>
+            <option value="5pm">5:00 PM</option>
+            <option value="9pm">9:00 PM</option>
+        </select>
+
+        <label for="bettorName">Your Name:</label>
+        <input type="text" id="bettorName" name="bettorName" required>
+
+        <input type="button" value="Submit" onclick="submitForm()">
+    </form>
+
+    <div id="submittedData"></div>
+
+    <script>
+        function submitForm() {
+            var form = document.getElementById("lotteryForm");
+            var formData = new FormData(form);
+            var records = JSON.parse(localStorage.getItem('lotteryRecords')) || [];
+
+            var record = {};
+            formData.forEach(function(value, key){
+                record[key] = value;
+            });
+            records.push(record);
+
+            localStorage.setItem('lotteryRecords', JSON.stringify(records));
+
+            displayRecords();
+        }
+
+        function deleteRecord(index) {
+            var records = JSON.parse(localStorage.getItem('lotteryRecords')) || [];
+            records.splice(index, 1);
+            localStorage.setItem('lotteryRecords', JSON.stringify(records));
+            displayRecords();
+        }
+
+        function displayRecords() {
+            var records = JSON.parse(localStorage.getItem('lotteryRecords')) || [];
+            var table = "<table>";
+            if (records.length > 0) {
+                table += "<tr>";
+                for (var key in records[0]) {
+                    table += "<th>" + key + "</th>";
+                }
+                table += "<th>Action</th></tr>";
+
+                records.forEach(function(record, index) {
+                    table += "<tr>";
+                    for (var key in record) {
+                        table += "<td>" + record[key] + "</td>";
+                    }
+                    table += "<td><button onclick='deleteRecord(" + index + ")'>Delete</button></td></tr>";
+                });
+            }
+            table += "</table>";
+
+            document.getElementById("submittedData").innerHTML = table;
+        }
+
+        // Display existing records on page load
+        displayRecords();
+    </script>
+
+</body>
+</html>
