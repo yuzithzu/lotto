@@ -24,6 +24,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
 
         label {
@@ -101,15 +102,7 @@
             margin-bottom: 10px;
         }
 
-        #winningDate {
-            width: 100%;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
+        #winningDate,
         #drawTime {
             width: 100%;
             padding: 10px;
@@ -138,10 +131,11 @@
         }
 
         #totalBetAmount {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
             color: #2ecc71;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            text-align: center;
         }
     </style>
 </head>
@@ -150,7 +144,7 @@
     <h1>Lottery Record</h1>
 
     <!-- Total Bet Amount Display -->
-    <div id="totalBetAmount" style="text-align: center; margin-top: 10px;"></div>
+    <div id="totalBetAmount"></div>
 
     <form id="lotteryForm">
         <label for="number1">Enter Number 1:</label>
