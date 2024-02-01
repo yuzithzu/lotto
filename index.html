@@ -72,7 +72,7 @@
         th, td {
             padding: 10px;
             text-align: left;
-            text-transform: uppercase; /* Convert text to uppercase */
+            text-transform: uppercase;
             border-bottom: 1px solid #ddd;
         }
 
@@ -136,11 +136,21 @@
         .winning-row {
             background-color: #aaffaa;
         }
+
+        #totalBetAmount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
     <h1>Lottery Record</h1>
+
+    <!-- Total Bet Amount Display -->
+    <div id="totalBetAmount" style="text-align: center; margin-top: 10px;"></div>
 
     <form id="lotteryForm">
         <label for="number1">Enter Number 1:</label>
@@ -193,6 +203,7 @@
     <label for="checkWinners">Check Winners</label>
     <input type="button" id="checkWinners" value="Check Winners" onclick="checkWinners()">
 
+    <!-- Records Container -->
     <div class="records-container" id="submittedData"></div>
 
     <script>
@@ -210,6 +221,7 @@
             localStorage.setItem('lotteryRecords', JSON.stringify(records));
 
             displayRecords();
+            updateTotalBetAmount(); // Added to update total after submission
         }
 
         function deleteRecord(index) {
@@ -217,9 +229,10 @@
             records.splice(index, 1);
             localStorage.setItem('lotteryRecords', JSON.stringify(records));
             displayRecords();
+            updateTotalBetAmount(); // Added to update total after deletion
         }
 
-        function displayRecords() {
+        function displayRecords(totalBetAmount) {
             var records = JSON.parse(localStorage.getItem('lotteryRecords')) || [];
             var container = document.getElementById("submittedData");
             var table = "<table>";
@@ -242,6 +255,12 @@
                 });
             }
             table += "</table>";
+
+            // Idinagdag ang row para sa total
+            if (typeof totalBetAmount !== 'undefined') {
+                table += "<tr><td colspan='" + (Object.keys(records[0]).length + 1) + "'><strong>Total Bet Amount:</strong> " + formatCurrency(totalBetAmount) + "</td></tr>";
+            }
+
             container.innerHTML = table;
         }
 
@@ -288,10 +307,35 @@
             container.innerHTML = table;
         }
 
+        function calculateTotalBetAmount() {
+            var records = JSON.parse(localStorage.getItem('lotteryRecords')) || [];
+            var totalBetAmount = 0;
+
+            records.forEach(function(record) {
+                totalBetAmount += parseInt(record['betAmount']) || 0;
+            });
+
+            return totalBetAmount;
+        }
+
+        function updateTotalBetAmount() {
+            var totalBetAmount = calculateTotalBetAmount();
+            displayTotalBetAmount(totalBetAmount);
+        }
+
+        function displayTotalBetAmount(totalBetAmount) {
+            var totalContainer = document.getElementById("totalBetAmount");
+            totalContainer.textContent = "Total Bet Amount: " + formatCurrency(totalBetAmount);
+        }
+
+        function formatCurrency(amount) {
+            return "₱" + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+
         // Display existing records on page load
         displayRecords();
+        updateTotalBetAmount();
     </script>
 
 </body>
 </html>
-
