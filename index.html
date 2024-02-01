@@ -53,21 +53,24 @@
             cursor: pointer;
         }
 
+        .records-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
         }
 
         th, td {
             padding: 10px;
             text-align: left;
+            text-transform: uppercase; /* Convert text to uppercase */
+            border-bottom: 1px solid #ddd;
         }
 
         td button {
@@ -94,12 +97,15 @@
         
         <label for="number2">Enter Number 2:</label>
         <input type="number" id="number2" name="number2" required>
-        
-        <label for="betType">Bet Type:</label>
+
+        <label for="betType">Select Bet Type:</label>
         <select id="betType" name="betType" required>
             <option value="straight">Straight</option>
-            <option value="Rambol">Rambol</option>
+            <option value="rumble">Rumble</option>
         </select>
+
+        <label for="betAmount">Enter Bet Amount:</label>
+        <input type="number" id="betAmount" name="betAmount" required>
 
         <label for="drawDate">Select Draw Date:</label>
         <input type="date" id="drawDate" name="drawDate" required>
@@ -117,7 +123,7 @@
         <input type="button" value="Submit" onclick="submitForm()">
     </form>
 
-    <div id="submittedData"></div>
+    <div class="records-container" id="submittedData"></div>
 
     <script>
         function submitForm() {
@@ -127,7 +133,7 @@
 
             var record = {};
             formData.forEach(function(value, key){
-                record[key] = value;
+                record[key] = value.toUpperCase(); // Convert to uppercase
             });
             records.push(record);
 
@@ -145,25 +151,32 @@
 
         function displayRecords() {
             var records = JSON.parse(localStorage.getItem('lotteryRecords')) || [];
+            var container = document.getElementById("submittedData");
             var table = "<table>";
+
             if (records.length > 0) {
+                // Display header row
                 table += "<tr>";
                 for (var key in records[0]) {
                     table += "<th>" + key + "</th>";
                 }
                 table += "<th>Action</th></tr>";
 
+                // Display rows with limit to 5 columns
                 records.forEach(function(record, index) {
                     table += "<tr>";
+                    var count = 0;
                     for (var key in record) {
-                        table += "<td>" + record[key] + "</td>";
+                        if (count < 5) {
+                            table += "<td>" + record[key] + "</td>";
+                            count++;
+                        }
                     }
                     table += "<td><button onclick='deleteRecord(" + index + ")'>Delete</button></td></tr>";
                 });
             }
             table += "</table>";
-
-            document.getElementById("submittedData").innerHTML = table;
+            container.innerHTML = table;
         }
 
         // Display existing records on page load
